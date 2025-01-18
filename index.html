@@ -1,0 +1,500 @@
+<!-- by last.0 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced To-Do List</title>
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --background: #f5f5f5;
+            --surface: #ffffff;
+            --text: #333333;
+            --primary: #4CAF50;
+            --primary-hover: #45a049;
+            --delete: #ff4444;
+            --delete-hover: #cc0000;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --border: #ddd;
+        }
+
+        /* Dark theme variables */
+        [data-theme="dark"] {
+            --background: #1a1a1a;
+            --surface: #2d2d2d;
+            --text: #ffffff;
+            --primary: #66bb6a;
+            --primary-hover: #81c784;
+            --delete: #ff5252;
+            --delete-hover: #ff1744;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --border: #404040;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px var(--shadow);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--text);
+            font-size: 2rem;
+            transition: color 0.3s ease;
+        }
+
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #taskInput {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: var(--surface);
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-hover);
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .delete-btn {
+            background-color: var(--delete);
+            padding: 8px 16px;
+        }
+
+        .delete-btn:hover {
+            background-color: var(--delete-hover);
+        }
+
+        ul {
+            list-style-type: none;
+            margin-top: 20px;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background-color: var(--background);
+            margin-bottom: 8px;
+            border-radius: 8px;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            transition: all 0.3s ease;
+        }
+
+        li:hover {
+            transform: translateX(5px);
+        }
+
+        .task-text {
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        /* Stats section */
+        .stats {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            color: var(--text);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+                .animated-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 16px 36px;
+        border: 4px solid;
+        border-color: transparent;
+        font-size: 16px;
+        background-color: inherit;
+        border-radius: 100px;
+        font-weight: 600;
+        color: greenyellow;
+        box-shadow: 0 0 0 2px greenyellow;
+        cursor: pointer;
+        overflow: hidden;
+        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .animated-button svg {
+        position: absolute;
+        width: 24px;
+        fill: greenyellow;
+        z-index: 9;
+        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .animated-button .arr-1 {
+        right: 16px;
+        }
+
+        .animated-button .arr-2 {
+        left: -25%;
+        }
+
+        .animated-button .circle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        background-color: greenyellow;
+        border-radius: 50%;
+        opacity: 0;
+        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .animated-button .text {
+        position: relative;
+        z-index: 1;
+        transform: translateX(-12px);
+        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .animated-button:hover {
+        box-shadow: 0 0 0 12px transparent;
+        color: #212121;
+        border-radius: 12px;
+        }
+
+        .animated-button:hover .arr-1 {
+        right: -25%;
+        }
+
+        .animated-button:hover .arr-2 {
+        left: 16px;
+        }
+
+        .animated-button:hover .text {
+        transform: translateX(12px);
+        }
+
+        .animated-button:hover svg {
+        fill: #212121;
+        }
+
+        .animated-button:active {
+        scale: 0.95;
+        box-shadow: 0 0 0 4px greenyellow;
+        }
+
+        .animated-button:hover .circle {
+        width: 220px;
+        height: 220px;
+        opacity: 1;
+        }
+        .switch {
+        font-size: 17px;
+        position: relative;
+        display: inline-block;
+        width: 3.5em;
+        height: 2em;
+        }
+
+        /* Hide default HTML checkbox */
+        .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        }
+
+/* The slider */
+        .slider {
+        --background: #cacaca;
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--background);
+        transition: .5s;
+        border-radius: 30px;
+        }
+
+        .slider:before {
+        position: absolute;
+        content: "";
+        height: 1.4em;
+        width: 1.4em;
+        border-radius: 50%;
+        left: 10%;
+        bottom: 15%;
+        box-shadow: inset 8px -4px 0px 0px #fff000;
+        background: var(--background);
+        transition: .5s;
+        }
+
+        input:checked + .slider {
+        background-color: #000000;
+        }
+
+        input:checked + .slider:before {
+        transform: translateX(100%);
+        box-shadow: inset 15px -4px 0px 15px #fff000;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>To Do List</h1>
+            <label class="switch" >
+                <input type="checkbox" onclick="toggleTheme()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="input-section">
+            <input type="text" id="taskInput" placeholder="Enter a new task" aria-label="New task input">
+            <button onclick="addTask()" aria-label=" " class="animated-button">
+                <svg viewBox="0 0 24 24" class="arr-2" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+                  ></path>
+                </svg>
+                <span class="text">Add task</span>
+                <span class="circle"></span>
+                <svg viewBox="0 0 24 24" class="arr-1" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M16.1716 10.9999L10.8076 5.63589L12.2218 4.22168L20 11.9999L12.2218 19.778L10.8076 18.3638L16.1716 12.9999H4V10.9999H16.1716Z"
+                  ></path>
+                </svg>
+              </button>
+        </div>
+        <ul id="taskList" aria-label="Task list"></ul>
+        <div id="emptyState" class="empty-state">
+            No tasks yet. Add one above!
+        </div>
+        <div class="stats">
+            <span id="totalTasks">Total: 0</span>
+            <span id="completedTasks">Completed: 0</span>
+        </div>
+        </span>by last.0</span>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+        const emptyState = document.getElementById('emptyState');
+        const totalTasksElement = document.getElementById('totalTasks');
+        const completedTasksElement = document.getElementById('completedTasks');
+
+        // Initialize tasks from localStorage
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // Initialize theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Update stats
+        function updateStats() {
+            const completedTasks = tasks.filter(task => task.completed).length;
+            totalTasksElement.textContent = `Total: ${tasks.length}`;
+            completedTasksElement.textContent = `Completed: ${completedTasks}`;
+            emptyState.style.display = tasks.length === 0 ? 'block' : 'none';
+        }
+
+        // Save tasks to localStorage
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            updateStats();
+        }
+
+        // Toggle theme
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Add task function
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            if (taskText === '') {
+                taskInput.classList.add('shake');
+                setTimeout(() => taskInput.classList.remove('shake'), 500);
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                text: taskText,
+                completed: false
+            };
+
+            tasks.push(task);
+            saveTasks();
+            renderTasks();
+            taskInput.value = '';
+        }
+
+        // Toggle task completion
+        function toggleTask(id) {
+            tasks = tasks.map(task => {
+                if (task.id === id) {
+                    return { ...task, completed: !task.completed };
+                }
+                return task;
+            });
+            saveTasks();
+            renderTasks();
+        }
+
+        // Delete task
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            saveTasks();
+            renderTasks();
+        }
+
+        // Render tasks
+        function renderTasks() {
+            taskList.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.addEventListener('change', () => toggleTask(task.id));
+
+                const taskSpan = document.createElement('span');
+                taskSpan.className = `task-text ${task.completed ? 'completed' : ''}`;
+                taskSpan.textContent = task.text;
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.setAttribute('aria-label', 'Delete task');
+                deleteBtn.onclick = () => deleteTask(task.id);
+
+                li.appendChild(checkbox);
+                li.appendChild(taskSpan);
+                li.appendChild(deleteBtn);
+                taskList.appendChild(li);
+            });
+            updateStats();
+        }
+
+        // Add task when Enter key is pressed
+        taskInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        renderTasks();
+    </script>
+</body>
+</html>
+
+<!-- by last.0 -->
